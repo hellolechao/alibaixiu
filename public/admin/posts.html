@@ -1,141 +1,380 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-<head>
-  <meta charset="utf-8">
-  <title>Posts &laquo; Admin</title>
-  <link rel="stylesheet" href="../assets/vendors/bootstrap/css/bootstrap.css">
-  <link rel="stylesheet" href="../assets/vendors/font-awesome/css/font-awesome.css">
-  <link rel="stylesheet" href="../assets/vendors/nprogress/nprogress.css">
-  <link rel="stylesheet" href="../assets/css/admin.css">
-  <script src="../assets/vendors/nprogress/nprogress.js"></script>
-</head>
-<body>
-  <script>NProgress.start()</script>
 
-  <div class="main">
-    <nav class="navbar">
-      <button class="btn btn-default navbar-btn fa fa-bars"></button>
-      <ul class="nav navbar-nav navbar-right">
-        <li><a href="profile.html"><i class="fa fa-user"></i>个人中心</a></li>
-        <li><a href="login.html"><i class="fa fa-sign-out"></i>退出</a></li>
-      </ul>
-    </nav>
-    <div class="container-fluid">
-      <div class="page-title">
-        <h1>所有文章</h1>
-        <a href="post-add.html" class="btn btn-primary btn-xs">写文章</a>
-      </div>
-      <div class="page-action">
-        <!-- show when multiple checked -->
-        <a class="btn btn-danger btn-sm" href="javascript:;" style="display: none">批量删除</a>
-        <form class="form-inline">
-          <select name="" class="form-control input-sm">
+<head>
+    <meta charset="utf-8">
+    <title>Posts &laquo; Admin</title>
+    <link rel="stylesheet" href="../assets/vendors/bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" href="../assets/vendors/font-awesome/css/font-awesome.css">
+    <link rel="stylesheet" href="../assets/vendors/nprogress/nprogress.css">
+    <link rel="stylesheet" href="../assets/css/admin.css">
+    <script src="../assets/vendors/nprogress/nprogress.js"></script>
+</head>
+<style>
+    .paginationdiv {
+        float: right;
+    }
+</style>
+
+<body>
+    <script>
+        NProgress.start()
+    </script>
+
+    <div class="main">
+        <nav class="navbar">
+            <button class="btn btn-default navbar-btn fa fa-bars"></button>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="profile.html"><i class="fa fa-user"></i>个人中心</a></li>
+                <li><a href="login.html"><i class="fa fa-sign-out"></i>退出</a></li>
+            </ul>
+        </nav>
+        <div class="container-fluid">
+            <div class="page-title">
+                <h1>所有文章</h1>
+                <a href="post-add.html" class="btn btn-primary btn-xs">写文章</a>
+            </div>
+            <div class="page-action">
+                <!-- show when multiple checked -->
+                <a class="btn btn-danger btn-sm" href="javascript:;" style="display: none">批量删除</a>
+                <form class="form-inline">
+                    <select name="category" class="form-control input-sm" id='categorySelections'>
             <option value="">所有分类</option>
           </select>
-          <select name="" class="form-control input-sm">
+                    <select name="state" class="form-control input-sm">
             <option value="">所有状态</option>
-            <option value="">草稿</option>
-            <option value="">已发布</option>
+            <option value="0">草稿</option>
+            <option value="1">已发布</option>
           </select>
-          <button class="btn btn-default btn-sm">筛选</button>
-        </form>
-        <ul class="pagination pagination-sm pull-right">
-          <li><a href="#">上一页</a></li>
-          <li><a href="#">1</a></li>
-          <li><a href="#">2</a></li>
-          <li><a href="#">3</a></li>
-          <li><a href="#">下一页</a></li>
-        </ul>
-      </div>
-      <table class="table table-striped table-bordered table-hover">
-        <thead>
-          <tr>
-            <th>标题</th>
-            <th>作者</th>
-            <th>分类</th>
-            <th class="text-center">发表时间</th>
-            <th class="text-center">状态</th>
-            <th class="text-center" width="100">操作</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>随便一个名称</td>
-            <td>小小</td>
-            <td>潮科技</td>
-            <td class="text-center">2016/10/07</td>
-            <td class="text-center">已发布</td>
-            <td class="text-center">
-              <a href="javascript:;" class="btn btn-default btn-xs">编辑</a>
-              <a href="javascript:;" class="btn btn-danger btn-xs">删除</a>
-            </td>
-          </tr>
-          <tr>
-            <td>随便一个名称</td>
-            <td>小小</td>
-            <td>潮科技</td>
-            <td class="text-center">2016/10/07</td>
-            <td class="text-center">已发布</td>
-            <td class="text-center">
-              <a href="javascript:;" class="btn btn-default btn-xs">编辑</a>
-              <a href="javascript:;" class="btn btn-danger btn-xs">删除</a>
-            </td>
-          </tr>
-          <tr>
-            <td>随便一个名称</td>
-            <td>小小</td>
-            <td>潮科技</td>
-            <td class="text-center">2016/10/07</td>
-            <td class="text-center">已发布</td>
-            <td class="text-center">
-              <a href="javascript:;" class="btn btn-default btn-xs">编辑</a>
-              <a href="javascript:;" class="btn btn-danger btn-xs">删除</a>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
+                    <button class="btn btn-default btn-sm" id='query'>筛选</button>
+                </form>
+                <div class='paginationdiv'>
+                    <ul id="pagination" class="pagination"></ul>
+                </div>
 
-  <div class="aside">
-    <div class="profile">
-      <img class="avatar" src="../uploads/avatar.jpg">
-      <h3 class="name">Coder</h3>
+            </div>
+            <table class="table table-striped table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th>标题</th>
+                        <th>作者</th>
+                        <th>分类</th>
+                        <th class="text-center">发表时间</th>
+                        <th class="text-center">状态</th>
+                        <th class="text-center" width="100">操作</th>
+                    </tr>
+                </thead>
+                <tbody id='articalList'>
+                    <!-- 8888888888888888888888 -->
+                </tbody>
+            </table>
+        </div>
     </div>
-    <ul class="nav">
-      <li>
-        <a href="index.html"><i class="fa fa-dashboard"></i>仪表盘</a>
-      </li>
-      <li class="active">
-        <a href="#menu-posts" data-toggle="collapse">
-          <i class="fa fa-thumb-tack"></i>文章<i class="fa fa-angle-right"></i>
-        </a>
-        <ul id="menu-posts" class="collapse in">
-          <li class="active"><a href="posts.html">所有文章</a></li>
-          <li><a href="post-add.html">写文章</a></li>
-          <li><a href="categories.html">分类目录</a></li>
-        </ul>
-      </li>
-      <li>
-        <a href="comments.html"><i class="fa fa-comments"></i>评论</a>
-      </li>
-      <li>
-        <a href="users.html"><i class="fa fa-users"></i>用户</a>
-      </li>
-      <li>
-        <a href="#menu-settings" class="collapsed" data-toggle="collapse">
-          <i class="fa fa-cogs"></i>设置<i class="fa fa-angle-right"></i>
-        </a>
-        <ul id="menu-settings" class="collapse">
-          <li><a href="slides.html">图片轮播</a></li>
-          <li><a href="settings.html">网站设置</a></li>
-        </ul>
-      </li>
-    </ul>
-  </div>
 
-  <script src="../assets/vendors/jquery/jquery.js"></script>
-  <script src="../assets/vendors/bootstrap/js/bootstrap.js"></script>
-  <script>NProgress.done()</script>
+    <div class="aside">
+        <div class="profile">
+            <img class="avatar" src="../uploads/avatar.jpg">
+            <h3 class="name">Coder</h3>
+        </div>
+        <ul class="nav">
+            <li>
+                <a href="index.html"><i class="fa fa-dashboard"></i>仪表盘</a>
+            </li>
+            <li class="active">
+                <a href="#menu-posts" data-toggle="collapse">
+                    <i class="fa fa-thumb-tack"></i>文章<i class="fa fa-angle-right"></i>
+                </a>
+                <ul id="menu-posts" class="collapse in">
+                    <li class="active"><a href="posts.html">所有文章</a></li>
+                    <li><a href="post-add.html">写文章</a></li>
+                    <li><a href="categories.html">分类目录</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="comments.html"><i class="fa fa-comments"></i>评论</a>
+            </li>
+            <li>
+                <a href="users.html"><i class="fa fa-users"></i>用户</a>
+            </li>
+            <li>
+                <a href="#menu-settings" class="collapsed" data-toggle="collapse">
+                    <i class="fa fa-cogs"></i>设置<i class="fa fa-angle-right"></i>
+                </a>
+                <ul id="menu-settings" class="collapse">
+                    <li><a href="slides.html">图片轮播</a></li>
+                    <li><a href="settings.html">网站设置</a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+    <script type='text/html' id='articalListTpl'>
+        {{each $data}}
+        <tr>
+            <td>{{$value.title}}</td>
+            <td>{{$value.author.nickName}}</td>
+            <td>{{$value.category.title}}</td>
+            <td class="text-center">
+                {{$imports.processTime($value.createAt)}}
+            </td>
+            <td class="text-center">{{$value.state?'已发布':'草稿'}}</td>
+            <td class="text-center">
+                <a href="javascript:;" class="btn btn-default btn-xs" data-id="{{$value._id}}">编辑</a>
+                <a href="javascript:;" class="btn btn-danger btn-xs" data-id="{{$value._id}}">删除</a>
+            </td>
+        </tr>
+        {{/each}}
+    </script>
+    <script type='text/html' id='fenleiTpl'>
+        {{each $data}}
+        <option value="{{$value._id}}">{{$value.title}}</option>
+        {{/each}}
+    </script>
+    <script src="../assets/vendors/jquery/jquery.js"></script>
+    <script src="../assets/vendors/bootstrap/js/bootstrap.js"></script>
+    <script src="../assets/vendors/art-template/template-web.js"></script>
+    <script src="../assets/vendors/twbs-pagination/jquery.twbsPagination.min.js"></script>
+    <script>
+        NProgress.done()
+    </script>
+    <script>
+        // function pagetem() {
+        //     $('#pagination').css({
+        //         float: 'right'
+        //     })
+
+        //     $('#pagination').twbsPagination({
+        //         totalPages: response.pages,
+        //         visiblePages: 3,
+        //         first: '首页11',
+        //         prev: '上一页',
+        //         next: '下一页',
+        //         last: '尾页',
+        //         onPageClick: function(event, page) {
+        //             changePage(page)
+        //         }
+        //     });
+        // }
+        // var processTime = function(time) {
+        //     return time.split('T')[0]
+        // }
+        // template.defaults.imports.processTime = processTime
+        //     // 获取列表
+        // $.ajax({
+        //     url: '/posts',
+        //     type: 'get',
+        //     success: function(response) {
+        //         // console.log(response.records[0].createAt.split('T')[0])
+        //         // console.log(response)
+        //         var html = template('articalListTpl', response.records)
+        //         $('#articalList').html(html)
+
+        // $('#pagination').css({
+        //     float: 'right'
+        // })
+
+        // $('#pagination').twbsPagination({
+        //     totalPages: response.pages,
+        //     // totalPages: 1,
+        //     visiblePages: 3,
+        //     // first: '首页1',
+        //     // prev: '上一页',
+        //     // next: '下一页',
+        //     // last: '尾页',
+        //     onPageClick: function(event, page) {
+        //         changePage(page)
+        //     }
+        // });
+
+        //     }
+        // })
+
+        // function changePage(page) {
+        //     $.ajax({
+        //         url: '/posts',
+        //         type: 'get',
+        //         data: {
+        //             page: page
+        //         },
+        //         success: function(response) {
+        //             // console.log(response.records[0].createAt.split('T')[0])
+
+        //             var html = template('articalListTpl', response.records)
+        //             $('#articalList').html(html)
+
+        //         }
+        //     })
+        // }
+
+        //获取分类
+        // $.ajax({
+        //     url: '/categories',
+        //     type: 'get',
+        //     success: function(response) {
+        //         // console.log(response)
+        //         var html = template('fenleiTpl', response)
+        //         $('#categorySelections').append(html)
+        //     }
+        // })
+
+        // $('#query').on('click', function() {
+        //     // alert('query')
+        //     var form_inline = document.querySelector('.form-inline')
+        //     var formData = new FormData(form_inline)
+        //         // var formData = $('.form-inline').serialize()
+        //     console.log(formData)
+        //     $.ajax({
+        //         url: '/posts',
+        //         type: 'get',
+        //         data: formData,
+        //         contentType: false,
+        //         processData: false,
+        //         success: function(response) {
+
+        //             console.log(response)
+        //             var html = template('articalListTpl', response.records)
+        //             $('#articalList').html(html)
+
+        //             $('#pagination').twbsPagination({
+        //                 totalPages: response.pages,
+        //                 // totalPages: 1,
+        //                 visiblePages: 3,
+        //                 first: '首页1',
+        //                 prev: '上一页',
+        //                 next: '下一页',
+        //                 last: '尾页',
+        //                 onPageClick: function(event, page) {
+        //                     formData.append('page', page)
+        //                     $.ajax({
+        //                         url: '/posts',
+        //                         type: 'get',
+        //                         data: formData,
+        //                         contentType: false,
+        //                         processData: false,
+        //                         success: function(response) {
+        //                             // console.log(response.records[0].createAt.split('T')[0])
+
+        //                             var html = template('articalListTpl', response.records)
+        //                             $('#articalList').html(html)
+
+        //                         }
+        //                     })
+        //                 }
+        //             });
+        // console.log(response.records[0].createAt.split('T')[0])
+
+
+
+
+        // }
+        // })
+
+
+        // return false
+        // })
+
+        // }
+        var processTime = function(time) {
+            return time.split('T')[0]
+        }
+        template.defaults.imports.processTime = processTime
+            // 获取列表
+        $.ajax({
+            url: '/posts',
+            type: 'get',
+            success: function(response) {
+                var html = template('articalListTpl', response.records)
+                $('#articalList').html(html)
+
+                $('#pagination').twbsPagination({
+                    totalPages: response.pages,
+                    visiblePages: 2,
+                    first: '首页',
+                    prev: '上一页',
+                    next: '下一页',
+                    last: '尾页',
+                    onPageClick: function(event, page) {
+                        $.ajax({
+                            url: '/posts',
+                            type: 'get',
+                            data: {
+                                page: page
+                            },
+                            success: function(response) {
+                                var html = template('articalListTpl', response.records)
+                                $('#articalList').html(html)
+
+                            }
+                        })
+                    }
+                })
+            }
+        })
+
+
+        // 获取分类
+        $.ajax({
+            url: '/categories',
+            type: 'get',
+            success: function(response) {
+                var html = template('fenleiTpl', response)
+                $('#categorySelections').append(html)
+            }
+        })
+
+        //筛选
+        $('#query').on('click', function() {
+            $('#pagination').remove()
+            $('.paginationdiv').html('<ul id="pagination" class="pagination"></ul>')
+
+            var formData = $('.form-inline').serialize()
+            var formDataArray = formData.split('&')
+            var new_formDataArray = formDataArray.filter(function(item) {
+                return item.charAt(item.length - 1) !== '='
+            })
+            new_formDataArray = new_formDataArray.join('&')
+            $.ajax({
+                url: '/posts',
+                type: 'get',
+                data: new_formDataArray,
+                success: function(response) {
+                    var html = template('articalListTpl', response.records)
+                    $('#articalList').html(html)
+                    console.log(response)
+                    $('#pagination').twbsPagination({
+                        totalPages: response.pages,
+                        visiblePages: 2,
+                        first: '首页',
+                        prev: '上一页',
+                        next: '下一页',
+                        last: '尾页',
+                        onPageClick: function(event, page) {
+                            new_formDataArray_page = new_formDataArray + '&page=' + page
+                            console.log(page)
+                            console.log(new_formDataArray_page)
+                            $.ajax({
+                                url: '/posts',
+                                type: 'get',
+                                data: new_formDataArray_page,
+                                success: function(response) {
+                                    // console.log(response.records[0].createAt.split('T')[0])
+
+                                    console.log(response)
+
+                                    var html = template('articalListTpl', response.records)
+                                    $('#articalList').html(html)
+
+                                }
+                            })
+                        }
+                    })
+                }
+            })
+
+
+
+            return false
+        })
+    </script>
 </body>
+
 </html>
